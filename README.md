@@ -111,3 +111,8 @@ Precompute the maximum heights to the left and right of every position using two
 This eliminates repeated boundary scans.
 
 ### 3. Two-Pointer
+
+## Live Demo
+
+- **Live Application:** [Open Water Tank Visualizer](https://water-tank-visualizer121.netlify.app/)
+- **Source Code:** [GitHub Repository](https://github.com/Nithish259/water-tank)
