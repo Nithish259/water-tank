@@ -1,0 +1,325 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <meta
+      name="description"
+      content="Interactive water tank visualizer using the optimized trapping rainwater algorithm."
+    />
+
+    <title>Water Tank | Algorithm Visualizer</title>
+  </head>
+
+  <body>
+    <header class="app-header">
+      <div class="container header-content">
+        <div class="brand">
+          <div class="brand-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <path
+                d="M12 3C9 7 5 11 5 15a7 7 0 0 0 14 0c0-4-4-8-7-12Z"
+              />
+              <path d="M8 15a4 4 0 0 0 4 4" />
+            </svg>
+          </div>
+
+          <div>
+            <h1>Water Tank</h1>
+            <p>Algorithm Visualizer</p>
+          </div>
+        </div>
+
+        <span class="algorithm-tag">
+          Two-pointer algorithm
+        </span>
+      </div>
+    </header>
+
+    <main class="container main-content">
+      <section class="intro">
+        <p class="eyebrow">INTERACTIVE ALGORITHM LAB</p>
+
+        <h2>Calculate trapped rainwater</h2>
+
+        <p>
+          Explore how water accumulates between blocks
+          of varying heights using an optimized
+          linear-time algorithm.
+        </p>
+      </section>
+
+      <section class="panel input-panel">
+        <div class="section-heading">
+          <h2>Block configuration</h2>
+          <p>Enter your own heights or select an example.</p>
+        </div>
+
+        <form id="water-form" novalidate>
+          <label for="heights-input">
+            Block heights
+          </label>
+
+          <textarea
+            id="heights-input"
+            rows="3"
+            spellcheck="false"
+            autocomplete="off"
+            aria-describedby="input-help input-error"
+            placeholder="e.g. 3, 0, 2, 0, 4"
+          >0, 4, 0, 0, 0, 6, 0, 6, 4, 0</textarea>
+
+          <p id="input-help" class="helper-text">
+            Enter up to 100 comma-separated integers
+            between 0 and 1000.
+          </p>
+
+          <p
+            id="input-error"
+            class="error-message"
+            role="alert"
+            hidden
+          ></p>
+
+          <div class="form-actions">
+            <button type="submit" class="button primary">
+              Calculate water
+            </button>
+
+            <button
+              type="button"
+              id="random-button"
+              class="button secondary"
+            >
+              Random input
+            </button>
+
+            <button
+              type="button"
+              id="reset-button"
+              class="button secondary"
+            >
+              Reset
+            </button>
+          </div>
+        </form>
+
+        <div class="examples">
+          <span>Quick examples</span>
+
+          <div class="example-buttons">
+            <button
+              type="button"
+              class="example-button"
+              data-example="assignment"
+            >
+              Assignment
+            </button>
+
+            <button
+              type="button"
+              class="example-button"
+              data-example="simple"
+            >
+              Simple tank
+            </button>
+
+            <button
+              type="button"
+              class="example-button"
+              data-example="multiple"
+            >
+              Multiple gaps
+            </button>
+
+            <button
+              type="button"
+              class="example-button"
+              data-example="noWater"
+            >
+              No water
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <p
+        id="calculation-status"
+        class="sr-only"
+        role="status"
+      ></p>
+
+      <section
+        class="stats-grid"
+        aria-label="Calculation statistics"
+      >
+        <article class="stat-card water-stat">
+          <p>Total trapped water</p>
+          <div class="stat-value" id="total-water">0</div>
+          <span>Water units</span>
+        </article>
+
+        <article class="stat-card">
+          <p>Block positions</p>
+          <div class="stat-value" id="block-count">0</div>
+          <span>Total columns</span>
+        </article>
+
+        <article class="stat-card">
+          <p>Maximum height</p>
+          <div class="stat-value" id="max-height">0</div>
+          <span>Height units</span>
+        </article>
+
+        <article class="stat-card">
+          <p>Time complexity</p>
+          <div class="stat-value">O(n)</div>
+          <span>Two-pointer approach</span>
+        </article>
+      </section>
+
+      <section class="visualization-grid">
+        <article class="panel chart-panel">
+          <div class="section-heading">
+            <h2>Water tank visualization</h2>
+            <p>Original blocks with accumulated water.</p>
+          </div>
+
+          <div class="legend">
+            <span>
+              <i class="legend-block"></i>
+              Blocks
+            </span>
+
+            <span>
+              <i class="legend-water"></i>
+              Trapped water
+            </span>
+          </div>
+
+          <div
+            id="combined-chart"
+            class="chart-container"
+            tabindex="0"
+            role="region"
+            aria-label="Combined block and water chart"
+          ></div>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="section-heading">
+            <h2>Trapped water only</h2>
+            <p>Isolated water distribution across positions.</p>
+          </div>
+
+          <div class="legend">
+            <span>
+              <i class="legend-water"></i>
+              Trapped water
+            </span>
+          </div>
+
+          <div
+            id="water-chart"
+            class="chart-container"
+            tabindex="0"
+            role="region"
+            aria-label="Water distribution chart"
+          ></div>
+        </article>
+      </section>
+
+      <section class="panel breakdown-panel">
+        <details>
+          <summary>Calculation breakdown</summary>
+
+          <p class="helper-text">
+            View the block height, water depth and
+            resulting water level at each position.
+          </p>
+
+          <div class="table-container">
+            <table>
+              <caption class="sr-only">
+                Trapped water at each block position
+              </caption>
+
+              <thead>
+                <tr>
+                  <th scope="col">Index</th>
+                  <th scope="col">Block height</th>
+                  <th scope="col">Trapped water</th>
+                  <th scope="col">Combined height</th>
+                </tr>
+              </thead>
+
+              <tbody id="breakdown-body"></tbody>
+
+              <tfoot>
+                <tr>
+                  <th scope="row" colspan="2">
+                    Total trapped water
+                  </th>
+
+                  <td id="breakdown-total">0</td>
+                  <td>—</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </details>
+      </section>
+
+      <section class="panel explanation-panel">
+        <div class="section-heading">
+          <h2>How it works</h2>
+          <p>
+            Water is limited by the shorter of the
+            tallest boundaries on either side.
+          </p>
+        </div>
+
+        <div class="formula">
+          water[i] = min(leftMax, rightMax) − height[i]
+        </div>
+
+        <div class="complexity-grid">
+          <div>
+            <strong>O(n)</strong>
+            <span>Time complexity</span>
+          </div>
+
+          <div>
+            <strong>O(1)</strong>
+            <span>Working space, excluding output</span>
+          </div>
+
+          <div>
+            <strong>O(n)</strong>
+            <span>Visualization output space</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <div class="container footer-content">
+        <p>Water Tank · Everquint Interview Assignment</p>
+        <p>Built with Vanilla JavaScript, HTML, CSS and SVG.</p>
+      </div>
+    </footer>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
